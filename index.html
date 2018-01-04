@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Deploying HA Kubernetes Cluster with TripleO</title>
+
+    <link rel="stylesheet" href="reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/solarized.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h2>Deploying HA Kuberentes cluster</h2>
+          <h1>with TripleO</h1>
+          <p><img src="images/tripleo-mascot.png" style="border: none; box-shadow: none; width: 40%; height: 40%;"></p>
+          <p>Jaunuary 2018</p>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Quick Intro
+
+            * TripleO (OpenStack on OpenStack)<br/>
+              = tools for deployment and management<br/>
+              of OpenStack clouds
+
+            * Recently started deploying in containers
+
+            * Investigating a next step: usage of COE<br/>
+              (OpenShift Origin / Kubernetes)
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Challenge, level 1
+
+            * Integrate a complex piece of software<br/>
+              like OpenShift Origin or Kubernetes
+
+            * Custom method vs. embedding an existing installer
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Solution, level 1
+
+            * We tried both approaches with Ceph
+
+            * Embedding ceph-ansible proved more sustainable
+
+            * For complex software, DRY benefits are likely<br>
+              to outweigh installer integration hurdles
+
+            * => To deploy HA Kubernetes in TripleO, we'll embed<br>
+              an installer to handle the details for us
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Challenge, level 2
+
+            * Our most recent deployment method is Ansible-based,<br/>
+              the installers to embed are Ansible-based too
+
+            * Dilemma:
+
+              ```yaml
+              # simplified for presentation purposes
+              - import_playbook: ebedded_installer_playbook.yml
+              ```
+
+              versus
+
+              ```yaml
+              # simplified for presentation purposes
+              - shell: |
+                  ansible-playbook <some args> embedded_installer_playbook.yml
+              ```
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Comparison, level 2
+
+            <table>
+              <tbody>
+                <tr>
+                  <td> </td>
+                  <td><strong>import_playbook</strong></td>
+                  <td><strong>shell</strong></td>
+                </tr>
+                <tr>
+                  <td><strong>Supported installers</strong></td>
+                  <td>Ansible only</td>
+                  <td>Any</td>
+                </tr>
+                <tr>
+                  <td><strong>Inventory</strong></td>
+                  <td>Inherited from outer playbook</td>
+                  <td>Separate, must be generated</td>
+                </tr>
+                <tr>
+                  <td><strong>Variables, tags</strong></td>
+                  <td>Inherited from outer playbook</td>
+                  <td>Separate, must be generated</td>
+                </tr>
+                <tr>
+                  <td><strong>Progress logging</strong></td>
+                  <td>Progressively each task</td>
+                  <td>Whole process output at once</td>
+                </tr>
+              </tbody>
+            </table>
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Solution, level 2
+
+            * We went with `shell`: ansible-playbook<br/>
+              as a subprocess of another ansible-playbook process<br/>
+
+            * "Ansible around Ansible"? "TripleA in TripleO"? 😊
+
+            * Good: Clean interface, versatile
+
+            * Bad: Deployment can give impression of being stuck when<br/>
+              the embedded installer runs for a long time
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Interface
+
+            * Outer Ansible process:
+
+              * prepares the host (e.g. firewall)
+
+              * generates files consumed by the inner Ansible:
+
+                * global variables
+
+                * inventory (with host groups and host variables)
+
+                * a simple encapsulating playbook
+
+              * executes the inner Ansible
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Logging
+
+            * Current naive solution: pipe output to a file,<br/>
+              let operator know where to find it
+
+              ```text
+              TASK [run openshift (immediate log at /home/stack/config-download/tripleo-WNM1co-config/openshift/playbook.log)]
+              ```
+
+            * Possible improvement e.g. integration
+              with [AWX](https://github.com/ansible/awx), or
+              [ARA](https://github.com/openstack/ara),<br/>
+              or other use of Ansible callbacks
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Code links
+
+            * Vanilla Kubernetes:
+              [master](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/kubernetes-master.yaml#L97),
+              [node](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/kubernetes-worker.yaml)
+
+              * Using [Kubespray](https://github.com/kubernetes-incubator/kubespray)
+
+            * OpenShift Origin:
+              [master](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/openshift-master.yaml#L56),
+              [node](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/openshift-worker.yaml)
+
+              * Using [OpenShift-Ansible](https://github.com/openshift/openshift-ansible)
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+          </textarea>
+        </section>
+      </div>
+    </div>
+
+    <script src="reveal.js/lib/js/head.min.js"></script>
+    <script src="reveal.js/js/reveal.js"></script>
+
+    <script>
+      // More info about config & dependencies:
+      // - https://github.com/hakimel/reveal.js#configuration
+      // - https://github.com/hakimel/reveal.js#dependencies
+      Reveal.initialize({
+        width: 1200,
+        height: 900,
+
+        history: true,
+        controls: false,
+        transition: 'none',
+
+        dependencies: [
+          { src: 'reveal.js/plugin/markdown/marked.js' },
+          { src: 'reveal.js/plugin/markdown/markdown.js' },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true },
+          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+        ]
+      });
+    </script>
+  </body>
+</html>
