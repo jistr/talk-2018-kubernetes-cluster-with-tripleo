@@ -144,21 +144,28 @@
         </section>
         <section data-markdown>
           <textarea data-template>
-            ## Interface
+            ## (Simplified) deployment workflow
+
+            <img src="images/workflow.png">
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## Interfacing with installers
 
             * Outer Ansible process:
 
-              * prepares the host (e.g. firewall)
+              * Satisfies prerequisites (e.g. firewall)
 
-              * generates files consumed by the inner Ansible:
+              * Generates files consumed by the inner Ansible:
 
-                * global variables
+                * Global variables
 
-                * inventory (with host groups and host variables)
+                * Inventory (with host groups and host variables)
 
-                * a simple encapsulating playbook
+                * Encapsulating playbook
 
-              * executes the inner Ansible
+              * Executes the inner Ansible
           </textarea>
         </section>
         <section data-markdown>
@@ -193,18 +200,6 @@
               [node](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/openshift-worker.yaml)
 
               * Using [OpenShift-Ansible](https://github.com/openshift/openshift-ansible)
-          </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
-          </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
-          </textarea>
-        </section>
-        <section data-markdown>
-          <textarea data-template>
           </textarea>
         </section>
         <section data-markdown>

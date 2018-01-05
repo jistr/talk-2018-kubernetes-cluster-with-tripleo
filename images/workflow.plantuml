@@ -1,0 +1,35 @@
+@startuml
+
+start
+
+:Provision hosts (Heat stack creation),
+do not apply software config yet;
+
+:Use Heat stack outputs to generate
+outer Ansible inventory and playbooks;
+
+partition "Outer Ansible playbook" {
+  repeat
+    :**Management host (undercloud):**
+    Run step N of external deployment tasks
+    (e.g. inner Ansible playbooks like
+    Kubespray, OpenShift-Ansible, …);
+    note left
+    //Full overcloud//
+    //inventory available//
+    //available if needed.//
+    end note
+
+    :**Provisioned hosts (overcloud):**
+    Run step N of normal deployment tasks;
+    note left
+    //Applied locally//
+    //on each host.//
+    //"localhost inventory"//
+    end note
+  repeat while (More steps to run?)
+}
+
+stop
+
+@enduml
