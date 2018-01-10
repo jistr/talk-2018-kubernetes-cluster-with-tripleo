@@ -1,5 +1,10 @@
 @startuml
 
+skinparam dpi 300
+legend top left
+Deployment workflow (simplified)
+end legend
+
 start
 
 :Provision hosts (Heat stack creation),
