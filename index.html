@@ -144,9 +144,7 @@
         </section>
         <section data-markdown>
           <textarea data-template>
-            ## (Simplified) deployment workflow
-
-            <img src="images/workflow.png">
+            <a href="images/workflow.png"><img src="images/workflow.png" style="height: 800px;"></a>
           </textarea>
         </section>
         <section data-markdown>
@@ -172,7 +170,7 @@
           <textarea data-template>
             ## Logging
 
-            * Current naive solution: pipe output to a file,<br/>
+            * Current naïve solution: pipe output to a file,<br/>
               let operator know where to find it
 
               ```text
@@ -185,9 +183,26 @@
               or other use of Ansible callbacks
           </textarea>
         </section>
+        <section>
+          <h2>It works!</h2>
+
+          <pre><code class="lang-diff hljs">[root@overcloud-controller-0 ~]# kubectl get nodes
+NAME                     STATUS    AGE       VERSION
+overcloud-compute-0      Ready     7m        v1.6.1+5115d708d7
+overcloud-compute-1      Ready     7m        v1.6.1+5115d708d7
+overcloud-compute-2      Ready     7m        v1.6.1+5115d708d7
+overcloud-controller-0   Ready     19m       v1.6.1+5115d708d7
+overcloud-controller-1   Ready     22m       v1.6.1+5115d708d7
+overcloud-controller-2   Ready     25m       v1.6.1+5115d708d7
+</code></pre>
+        </section>
         <section data-markdown>
           <textarea data-template>
-            ## Code links
+            ## Links
+
+            * **Slides: [https://tinyurl.com/k8s-tripleo](https://tinyurl.com/k8s-tripleo)**
+
+              * [https://jistr.github.io/talk-2018-kubernetes-cluster-with-tripleo/](https://jistr.github.io/talk-2018-kubernetes-cluster-with-tripleo/)
 
             * Vanilla Kubernetes:
               [master](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/kubernetes-master.yaml#L97),
@@ -195,15 +210,35 @@
 
               * Using [Kubespray](https://github.com/kubernetes-incubator/kubespray)
 
+              * [Kubernetes in TripleO](https://www.jistr.com/blog/2017-11-21-kubernetes-in-tripleo/) (dev env setup blog post)
+
             * OpenShift Origin:
               [master](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/openshift-master.yaml#L56),
               [node](https://github.com/openstack/tripleo-heat-templates/blob/d05b39d149e3d1c761ba55dc7db9b60328c3dd25/extraconfig/services/openshift-worker.yaml)
 
               * Using [OpenShift-Ansible](https://github.com/openshift/openshift-ansible)
+
+              * [OpenShift Origin in TripleO](https://www.jistr.com/blog/2018-01-04-openshift-origin-in-tripleo/) (dev env setup blog post)
           </textarea>
         </section>
         <section data-markdown>
           <textarea data-template>
+            ## Summary
+
+            * Reuse existing installers for complex SW like Kubernetes
+
+              * Reuse benefits beat integration troubles
+
+            * Clean, explicit integration interface
+
+              * Ideally on both sides
+          </textarea>
+        </section>
+        <section data-markdown>
+          <textarea data-template>
+            ## The end
+
+            ## Q&A
           </textarea>
         </section>
       </div>
