@@ -20,17 +20,15 @@ partition "Outer Ansible playbook" {
     (e.g. inner Ansible playbooks like
     Kubespray, OpenShift-Ansible, …);
     note left
-    //Full overcloud//
-    //inventory available//
-    //available if needed.//
+    //Can access//
+    //full inventory.//
     end note
 
     :**Provisioned hosts (overcloud):**
     Run step N of normal deployment tasks;
     note left
-    //Applied locally//
-    //on each host.//
-    //"localhost inventory"//
+    //Tasks applied on//
+    //a per-host basis.//
     end note
   repeat while (More steps to run?)
 }

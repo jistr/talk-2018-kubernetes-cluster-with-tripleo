@@ -34,14 +34,17 @@
           <textarea data-template>
             ## Quick Intro
 
-            * TripleO (OpenStack on OpenStack)<br/>
-              = tools for deployment and management<br/>
-              of OpenStack clouds
+            * TripleO (OpenStack on OpenStack) = tools for<br/>
+              deployment and management of OpenStack clouds
 
-            * Recently started deploying in containers
+              * Can be used as a generic provisioning tool
 
-            * Investigating a next step: usage of COE<br/>
-              (OpenShift Origin / Kubernetes)
+            * Investigating usage of TripleO for COE
+              (Kubernetes/OpenShift)
+
+              * Provide HW management for COE deployments
+
+              * Enhance container-based OpenStack deployments
           </textarea>
         </section>
         <section data-markdown>
@@ -62,7 +65,7 @@
 
             * Embedding ceph-ansible proved more sustainable
 
-            * For complex software, DRY benefits are likely<br>
+            * For complex software, benefits of reuse are likely<br>
               to outweigh installer integration hurdles
 
             * => To deploy HA Kubernetes in TripleO, we'll embed<br>
@@ -80,7 +83,7 @@
 
               ```yaml
               # simplified for presentation purposes
-              - import_playbook: ebedded_installer_playbook.yml
+              - import_playbook: embedded_installer_playbook.yml
               ```
 
               versus
@@ -163,7 +166,9 @@
 
                 * Encapsulating playbook
 
-              * Executes the inner Ansible
+              * Executes the inner Ansible (as subprocess)
+
+            * *Non-Ansible installers can be integrated similarly*
           </textarea>
         </section>
         <section data-markdown>
