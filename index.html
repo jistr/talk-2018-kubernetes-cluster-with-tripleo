@@ -28,19 +28,19 @@
           <h2>Deploying HA Kuberentes cluster</h2>
           <h1>with TripleO</h1>
           <p><img src="images/tripleo-mascot.png" style="border: none; box-shadow: none; width: 40%; height: 40%;"></p>
-          <p>Jaunuary 2018</p>
+          <p style="font-family: sans-serif">Jiří Stránský</p>
+          <p style="font-family: sans-serif">Jaunuary 2018</p>
         </section>
         <section data-markdown>
           <textarea data-template>
-            ## Quick Intro
+            ## Intro
 
             * TripleO (OpenStack on OpenStack) = tools for<br/>
               deployment and management of OpenStack clouds
 
               * Can be used as a generic provisioning tool
 
-            * Investigating usage of TripleO for COE
-              (Kubernetes/OpenShift)
+            * Investigating usage of COE (Kubernetes/OpenShift) in TripleO
 
               * Provide HW management for COE deployments
 
@@ -137,8 +137,6 @@
             * We went with `shell`: ansible-playbook<br/>
               as a subprocess of another ansible-playbook process<br/>
 
-            * "Ansible around Ansible"? "TripleA in TripleO"? 😊
-
             * Good: Clean interface, versatile
 
             * Bad: Deployment can give impression of being stuck when<br/>
@@ -156,15 +154,13 @@
 
             * Outer Ansible process:
 
-              * Satisfies prerequisites (e.g. firewall)
-
               * Generates files consumed by the inner Ansible:
 
                 * Global variables
 
                 * Inventory (with host groups and host variables)
 
-                * Encapsulating playbook
+                * Encapsulating playbook (satisfy prerequisites,<br/>import external playbook)
 
               * Executes the inner Ansible (as subprocess)
 
@@ -175,7 +171,7 @@
           <textarea data-template>
             ## Logging
 
-            * Current naïve solution: pipe output to a file,<br/>
+            * Current naïve solution: `tee` output to a file,<br/>
               let operator know where to find it
 
               ```text
