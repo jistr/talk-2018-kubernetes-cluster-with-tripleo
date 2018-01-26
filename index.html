@@ -39,13 +39,13 @@
             * TripleO (OpenStack on OpenStack) = tools for<br/>
               deployment and management of OpenStack clouds
 
-              * Can be used as a generic provisioning tool
+              * Generic provisioning tool
 
-            * Investigating usage of COE (Kubernetes/OpenShift) in TripleO
+            * COE (Kubernetes / OpenShift) in TripleO (WIP)
 
-              * Provide HW management for COE deployments
+              * TripleO as HW management for COE deployments
 
-              * Enhance container-based OpenStack deployments
+              * COE as management of containerized OpenStack
           </textarea>
         </section>
         <section data-markdown>
@@ -53,7 +53,7 @@
             ## Challenge, level 1
 
             * Integrate a complex piece of software<br/>
-              like OpenShift Origin or Kubernetes
+              (Kubernetes / OpenShift Origin)
 
             * Custom method vs. embedding an existing installer
           </textarea>
@@ -62,23 +62,22 @@
           <textarea data-template>
             ## Solution, level 1
 
-            * We tried both approaches with Ceph
+            * Tried both with Ceph
 
-            * Embedding ceph-ansible proved more sustainable
+              * Embedding more sustainable
 
-            * For complex software, benefits of reuse are likely<br>
-              to outweigh installer integration hurdles
+            * Benefits of reuse greater than integration hurdles
 
-            * => To deploy HA Kubernetes in TripleO, we'll embed<br>
-              an installer to handle the details for us
+            * Kubernetes in TripleO => embed another installer!
+
+              * Best practices, HA, …
           </textarea>
         </section>
         <section data-markdown>
           <textarea data-template>
             ## Challenge, level 2
 
-            * Our most recent deployment method is Ansible-based,<br/>
-              the installers to embed are Ansible-based too
+            * Currently all Ansible-based (TripleO & embedded)
 
             * Dilemma:
 
@@ -135,13 +134,11 @@
           <textarea data-template>
             ## Solution, level 2
 
-            * We went with `shell`: ansible-playbook<br/>
-              as a subprocess of another ansible-playbook process<br/>
+            * Our pick: `shell` (Ansible around Ansible)
 
             * Good: Clean interface, versatile
 
-            * Bad: Deployment can give impression of being stuck when<br/>
-              the embedded installer runs for a long time
+            * Bad: No progressive logging
           </textarea>
         </section>
         <section data-markdown>
@@ -150,28 +147,27 @@
 
             * Outer Ansible process:
 
-              * Generates files consumed by the inner Ansible:
+              * Generates files for the embedded Ansible:
 
                 * Global variables
 
-                * Inventory (with host groups and host variables)
+                * Inventory (host groups, host variables)
 
-                * Encapsulating playbook (satisfy prerequisites,<br/>import external playbook)
+                * Playbook (prerequisites, import external playbook)
 
-              * Executes the inner Ansible (as subprocess)
+              * Executes the embedded Ansible
 
-            * *Non-Ansible installers can be integrated similarly*
+            * *Similar for non-Ansible installers*
           </textarea>
         </section>
         <section data-markdown>
           <textarea data-template>
-            ## Logging
+            ## Progressive logging
 
-            * Current naïve solution: `tee` output to a file,<br/>
-              let operator know where to find it
+            * Naïve solution: `tee` to a file, let operator know
 
               ```text
-              TASK [run openshift (immediate log at /home/stack/config-download/tripleo-WNM1co-config/openshift/playbook.log)]
+              TASK [run openshift (immediate log at /home/stack/config-download/…
               ```
 
             * Possible improvement e.g. integration
@@ -227,7 +223,7 @@ overcloud-controller-2   Ready     25m       v1.6.1+5115d708d7
           <textarea data-template>
             ## Summary
 
-            * Reuse existing installers for complex SW like Kubernetes
+            * Embedding complex SW => reuse existing installer
 
               * Reuse benefits outweigh integration troubles
 
